@@ -18,7 +18,7 @@ class RequirementController extends Controller
      * @Route("/", name="volleyball_requirement_index")
      * @Template("VolleyballCourseBundle:Requirement:index.html.twig")
      */
-    public function indexAction()
+    public function indexAction(Request $request)
     {
         // get route name/params to decypher data to delimit by
         $query = $this->get('doctrine')
@@ -40,8 +40,9 @@ class RequirementController extends Controller
      * @Route("/{slug}", name="volleyball_requirement_show")
      * @Template("VolleyballCourseBundle:Requirement:show.html.twig")
      */
-    public function showAction($slug)
+    public function showAction(Request $request)
     {
+        $slug = $request->getParameter('slug');
         $requirement = $this->getDoctrine()
             ->getRepository('VolleyballCourseBundle:Requirement')
             ->findOneBySlug($slug);

@@ -18,7 +18,7 @@ class CourseController extends Controller
      * @Route("/", name="volleyball_course_index")
      * @Template("VolleyballCourseBundle:Course:index.html.twig")
      */
-    public function indexAction()
+    public function indexAction(Request $request)
     {
         // get route name/params to decypher data to delimit by
         $query = $this->get('doctrine')
@@ -40,8 +40,9 @@ class CourseController extends Controller
      * @Route("/{slug}", name="volleyball_course_show")
      * @Template("VolleyballCourseBundle:Course:show.html.twig")
      */
-    public function showAction($slug)
+    public function showAction(Request $request)
     {
+        $slug = $request->getParameter('slug');
         $course = $this->getDoctrine()
             ->getRepository('VolleyballCourseBundle:Course')
             ->findOneBySlug($slug);

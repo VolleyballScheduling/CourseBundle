@@ -18,7 +18,7 @@ class VbClassController extends Controller
      * @Route("/", name="volleyball_class_index")
      * @Template("VolleyballCourseBundle:VbClass:index.html.twig")
      */
-    public function indexAction()
+    public function indexAction(Request $request)
     {
         // get route name/params to decypher data to delimit by
         $query = $this->get('doctrine')
@@ -40,8 +40,9 @@ class VbClassController extends Controller
      * @Route("/{slug}", name="volleyball_class_show")
      * @Template("VolleyballCourseBundle:VbClass:show.html.twig")
      */
-    public function showAction($slug)
+    public function showAction(Request $request)
     {
+        $slug = $request->getParameter('slug');
         $class = $this->getDoctrine()
             ->getRepository('VolleyballCourseBundle:VbClass')
             ->findOneBySlug($slug);

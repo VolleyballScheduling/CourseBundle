@@ -1,2 +1,16 @@
 services:
-        
+    volleyball.controller.course:
+        class: Volleyball\Bundle\CourseBundle\Controller\CourseController
+        factory_service: sylius.controller.configuration_factory
+        factory_method: createConfiguration
+        arguments: ["sylius", "course", "VolleyballCourseBundle:Course"]
+    volleyball.controller.requirement:
+        class: Volleyball\Bundle\CourseBundle\Controller\RequirementController
+        factory_service: sylius.controller.configuration_factory
+        factory_method: createConfiguration
+        arguments: ["sylius", "requirement", "VolleyballCourseBundle:Requirement"]
+    volleyball.controller.vb_class:
+        class: Volleyball\Bundle\EnrollmentBundle\Controller\VbClassController
+        factory_service: sylius.controller.configuration_factory
+        factory_method: createConfiguration
+        arguments: ["sylius", "vb_class", "VolleyballEnrollmentBundle:VbClass"]

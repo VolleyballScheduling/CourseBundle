@@ -1,18 +1,19 @@
 <?php
 namespace Volleyball\Bundle\CourseBundle\Entity;
 
-use Volleyball\Bundle\UtilityBundle\Traits\SluggableTrait;
-use Volleyball\Bundle\UtilityBundle\Traits\TimestampableTrait;
+use \Doctrine\ORM\Mapping as ORM;
+use \Gedmo\Mapping\Annotation as Gedmo;
+use \Symfony\Component\Validator\Constraints as Assert;
+use \Doctrine\Common\Collections\ArrayCollection;
 
-use Doctrine\ORM\Mapping as ORM;
-use Gedmo\Mapping\Annotation as Gedmo;
-use Symfony\Component\Validator\Constraints as Assert;
+use \Volleyball\Bundle\UtilityBundle\Traits\SluggableTrait;
+use \Volleyball\Bundle\UtilityBundle\Traits\TimestampableTrait;
 
 /**
  * @ORM\Entity(repositoryClass="Volleyball\Bundle\CourseBundle\Repository\CourseRepository")
  * @ORM\Table(name="course")
  */
-class Course
+class Course implements \Volleyball\Component\Course\Interfaces\CourseInterface
 {
     use SluggableTrait;
     use TimestampableTrait;
@@ -43,14 +44,45 @@ class Course
      *      minMessage = "Name must be at least {{ limit }} characters length",
      *      maxMessage = "Name cannot be longer than {{ limit }} characters length"
      * )
-     * @var string
      */
     protected $name;
+    
+    /**
+     * @ORM\Column(type="text")
+     */
+    protected $description;
+    
+    /**
+     * @ORM\ManyToMany(targetEntity="Volleyball\Bundle\OrganizationBundle\Entity\Organization", inversedBy="courses")
+     * @ORM\JoinTable(name="courses_organizations")
+     */
+    protected $organizations;
 
     /**
-     * Get name
-     *
-     * @return string
+     * @ORM\ManyToMany(targetEntity="Volleyball\Bundle\OrganizationBundle\Entity\Council", inversedBy="courses")
+     * @ORM\JoinTable(name="courses_councils")
+     */
+    protected $councils;
+    
+    /**
+     * @ORM\ManyToOne(targetEntity="Volleyball\Bundle\OrganizationBundle\Entity\Region", inversedBy="courses")
+     * @ORM\JoinTable(name="courses_regions")
+     */
+    protected $regions;
+    
+    /**
+     * @ORM\OneToMany(targetEntity="Volleyball\Bundle\CourseBundle\Entity\VbClass", mappedBy="course")
+     */
+    protected $classes;
+    
+    /**
+     * @ORM\OneToMany(targetEntity="Volleyball\Bundle\CourseBundle\Entity\Requirement", mappedBy="course")
+     */
+    protected $requirements;
+    
+
+    /**
+     * @{inheritdocs}
      */
     public function getName()
     {
@@ -58,11 +90,7 @@ class Course
     }
 
     /**
-     * Set name
-     *
-     * @param string $name name
-     *
-     * @return Passel
+     * @{inheritdocs}
      */
     public function setName($name)
     {
@@ -72,14 +100,7 @@ class Course
     }
 
     /**
-     * @ORM\Column(type="text")
-     */
-    protected $description;
-
-    /**
-     * Get description
-     *
-     * @return string
+     * @{inheritdocs}
      */
     public function getDescription()
     {
@@ -87,11 +108,7 @@ class Course
     }
 
     /**
-     * Set description
-     *
-     * @param string $description string
-     *
-     * @return Region
+     * @{inheritdocs}
      */
     public function setDescription($description)
     {
@@ -99,120 +116,175 @@ class Course
 
         return $this;
     }
-
+    
     /**
-     * @ORM\ManyToOne(targetEntity="Volleyball\Bundle\OrganizationBundle\Entity\Organization", inversedBy="course")
-     * @ORM\JoinColumn(name="organization_id", referencedColumnName="id")
+     * @{inheritdocs}
      */
-    protected $organization;
-
-    /**
-     * Get organization
-     *
-     * @return Organization
-     */
-    public function getOrganization()
+    public function getOrganizations()
     {
-        return $this->organization;
+        return $this->organizations;
+    }
+    
+    /**
+     * @{inheritdocs}
+     */
+    public function getOrganization($organization)
+    {
+        return $this->organizations->get($organization);
+    }
+    
+    /**
+     * @{inheritdocs}
+     */
+    public function setOrganizations(array $organizations)
+    {
+        if (!$this->organizations instanceof ArrayCollection) {
+            $organizations = new ArrayCollection($organizations);
+        }
+        
+        $this->organizations = $organizations;
+        
+        return $this;
     }
 
     /**
-     * Set organization
-     *
-     * @param Organization $organization organization
-     *
-     * @return Course
+     * @{inheritdocs}
      */
-    public function setOrganization(Organization $organization)
+    public function addOrganization(\Volleyball\Bundle\OrganizationBundle\Entity\Organization $organization)
     {
-        $this->organization = $organization;
+        $this->organizations->add($organization);
+
+        return $this;
+    }
+    
+    /**
+     * Remove organization
+     * @param mixed $organization
+     * @return \Volleyball\Bundle\CourseBundle\Entity\Course
+     */
+    public function removeOrganization($organization)
+    {
+        $this->organizations->remove($organization);
+
+        return $this;
+    }
+    
+    /**
+     * @{inheritdocs}
+     */
+    public function getCouncils()
+    {
+        return $this->councils;
+    }
+    
+    /**
+     * @{inheritdocs}
+     */
+    public function getCouncil($council)
+    {
+        return $this->councils->get($council);
+    }
+    
+    /**
+     * @{inheritdocs}
+     */
+    public function setCouncils(array $councils)
+    {
+        if (!$this->councils instanceof ArrayCollection) {
+            $councils = new ArrayCollection($councils);
+        }
+        
+        $this->councils = $councils;
+        
+        return $this;
+    }
+
+    /**
+     * @{inheritdocs}
+     */
+    public function addCouncil(\Volleyball\Bundle\OrganizationBundle\Entity\Council $council)
+    {
+        $this->councils->add($council);
+
+        return $this;
+    }
+    
+    /**
+     * Remove council
+     * @param mixed $council
+     * @return \Volleyball\Bundle\CourseBundle\Entity\Course
+     */
+    public function removeCouncil($council)
+    {
+        $this->councils->remove($council);
+
+        return $this;
+    }
+    
+    /**
+     * @{inheritdocs}
+     */
+    public function getRegions()
+    {
+        return $this->regions;
+    }
+    
+    /**
+     * @{inheritdocs}
+     */
+    public function getRegion($region)
+    {
+        return $this->regions->get($region);
+    }
+    
+    /**
+     * @{inheritdocs}
+     */
+    public function setRegions(array $regions)
+    {
+        if (!$this->regions instanceof ArrayCollection) {
+            $regions = new ArrayCollection($regions);
+        }
+        
+        $this->regions = $regions;
+        
+        return $this;
+    }
+
+    /**
+     * @{inheritdocs}
+     */
+    public function addRegion(\Volleyball\Bundle\OrganizationBundle\Entity\Region $region)
+    {
+        $this->regions->add($region);
+
+        return $this;
+    }
+    
+    /**
+     * Remove region
+     * @param mixed $region
+     * @return \Volleyball\Bundle\CourseBundle\Entity\Course
+     */
+    public function removeRegion($region)
+    {
+        $this->regions->remove($region);
 
         return $this;
     }
 
     /**
-     * @ORM\ManyToOne(targetEntity="Volleyball\Bundle\OrganizationBundle\Entity\Council", inversedBy="course")
-     * @ORM\JoinColumn(name="council_id", referencedColumnName="id")
+     * @{inheritdocs}
      */
-    protected $council = null;
-
-    /**
-     * Get council
-     *
-     * @return Council
-     */
-    public function getCouncil()
-    {
-        return $this->council;
-    }
-
-    /**
-     * Set council
-     *
-     * @param Council $council council
-     *
-     * @return Course
-     */
-    public function setCouncil(Council $council)
-    {
-        $this->council = $council;
-
-        return $this;
-    }
-
-    /**
-     * @ORM\ManyToOne(targetEntity="Volleyball\Bundle\OrganizationBundle\Entity\Region", inversedBy="course")
-     * @ORM\JoinColumn(name="region_id", referencedColumnName="id")
-     */
-    protected $region = null;
-
-    /**
-     * Get region
-     *
-     * @return Region
-     */
-    public function getRegion()
-    {
-        return $this->region;
-    }
-
-    /**
-     * Set region
-     *
-     * @param Region $region region
-     *
-     * @return Course
-     */
-    public function setRegion(Region $region)
-    {
-        $this->region = $region;
-
-        return $this;
-    }
-
-    /**
-     * @ORM\OneToMany(targetEntity="VbClass", mappedBy="course")
-     */
-    protected $classes = array();
-
-    /**
-     * Get classes
-     *
-     * @return ArrayCollection
-     */
-    public function getClasses()
+    public function getVbClasses()
     {
         return $this->classes;
     }
 
     /**
-     * Set classes
-     *
-     * @param array $classes classes
-     *
-     * @return self
+     * @{inheritdocs}
      */
-    public function setClasses(array $classes)
+    public function setVbClasses(array $classes)
     {
         if (! $classes instanceof ArrayCollection) {
             $classes = new ArrayCollection($classes);
@@ -224,35 +296,25 @@ class Course
     }
 
     /**
-     * Has classes
-     *
-     * @return boolean
+     * @{inheritdocs}
      */
-    public function hasClasses()
+    public function hasVbClasses()
     {
         return !$this->classes->isEmpty();
     }
 
     /**
-     * Get a class
-     *
-     * @param VbClass|String $class class
-     *
-     * @return VbClass
+     * @{inheritdocs}
      */
-    public function getClass($class)
+    public function getVbClass($class)
     {
         return $this->classes->get($class);
     }
 
     /**
-     * Add a class
-     *
-     * @param VbClass $class class
-     *
-     * @return self
+     * @{inheritdocs}
      */
-    public function addClass(VbClass $class)
+    public function addVbClass(\Volleyball\Bundle\CourseBundle\Entity\VbClass $class)
     {
         $this->classes->add($class);
 
@@ -262,11 +324,11 @@ class Course
     /**
      * Remove a class
      *
-     * @param Class|String $class class
+     * @param mixed $class class
      *
      * @return self
      */
-    public function removeClass($class)
+    public function removeVbClass($class)
     {
         $this->classes->remove($class);
 
@@ -274,14 +336,7 @@ class Course
     }
 
     /**
-     * @ORM\OneToMany(targetEntity="Requirement", mappedBy="course")
-     */
-    protected $requirements = array();
-
-    /**
-     * Get requirements
-     *
-     * @return ArrayCollection
+     * @{inheritdocs}
      */
     public function getRequirements()
     {
@@ -289,11 +344,7 @@ class Course
     }
 
     /**
-     * Set requirements
-     *
-     * @param array $requirements requirements
-     *
-     * @return self
+     * @{inheritdocs}
      */
     public function setRequirements(array $requirements)
     {
@@ -317,11 +368,7 @@ class Course
     }
 
     /**
-     * Get a requirement
-     *
-     * @param Requirement|String $requirement requirement
-     *
-     * @return Requirement
+     * @{inheritdocs}
      */
     public function getRequirement($requirement)
     {
@@ -329,13 +376,9 @@ class Course
     }
 
     /**
-     * Add a requirement
-     *
-     * @param Requirement $requirement requirement
-     *
-     * @return self
+     * @{inheritdocs}
      */
-    public function addRequirement(Requirement $requirement)
+    public function addRequirement(\Volleyball\Bundle\CourseBundle\Entity\Requirement $requirement)
     {
         $this->requirements->add($requirement);
 
@@ -345,9 +388,9 @@ class Course
     /**
      * Remove a requirement
      *
-     * @param Requirement|String $requirement requirement
+     * @param mixed $requirement requirement
      *
-     * @return self
+     * @return \Volleyball\Bundle\CourseBundle\Entity\VbClss
      */
     public function removeRequirement($requirement)
     {
@@ -363,5 +406,8 @@ class Course
     {
         $this->classes = new \Doctrine\Common\Collections\ArrayCollection();
         $this->requirements = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->organizations = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->councils = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->regions = new \Doctrine\Common\Collections\ArrayCollection();
     }
 }

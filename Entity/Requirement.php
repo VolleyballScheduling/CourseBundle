@@ -12,7 +12,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @ORM\Entity(repositoryClass="Volleyball\Bundle\CourseBundle\Repository\RequirementRepository")
  * @ORM\Table(name="requirement")
  */
-class Requirement
+class Requirement implements \Volleyball\Component\Course\Interfaces\RequirementInterface
 {
     use SluggableTrait;
     use TimestampableTrait;
@@ -24,6 +24,42 @@ class Requirement
      * @ORM\GeneratedValue(strategy="AUTO")
      */
     protected $id;
+    
+    /**
+     * @ORM\Column(type="string")
+     * @Assert\Length(
+     *      min = "1",
+     *      max = "250",
+     *      minMessage = "Name must be at least {{ limit }} characters length",
+     *      maxMessage = "Name cannot be longer than {{ limit }} characters length"
+     * )
+     */
+    protected $name;
+    
+    /**
+     * @ORM\Column(type="text")
+     */
+    protected $description;
+    
+    /**
+     * @ORM\ManyToOne(targetEntity="Volleyball\Bundle\CourseBundle\Entity\Requirement", inversedBy="requirement")
+     * @ORM\JoinColumn(name="parent_id", referencedColumnName="id")
+     */
+    protected $parent;
+    
+    /**
+     * @ORM\ManyToOne(targetEntity="Volleyball\Bundle\CourseBundle\Entity\Course", inversedBy="requirement")
+     * @ORM\JoinColumn(name="course_id", referencedColumnName="id")
+     */
+    protected $course;
+    
+    /**
+     * Optional
+     * @param  boolean        $optional optional
+     * @return boolean|Course
+     * @ORM\Column(name="optional", type="boolean")
+     */
+    protected $optional;
 
     /**
      * Get id
@@ -36,21 +72,7 @@ class Requirement
     }
 
     /**
-     * @ORM\Column(type="string")
-     * @Assert\Length(
-     *      min = "1",
-     *      max = "250",
-     *      minMessage = "Name must be at least {{ limit }} characters length",
-     *      maxMessage = "Name cannot be longer than {{ limit }} characters length"
-     * )
-     * @var string
-     */
-    protected $name;
-
-    /**
-     * Get name
-     *
-     * @return string
+     * @{inheritdocs}
      */
     public function getName()
     {
@@ -58,11 +80,7 @@ class Requirement
     }
 
     /**
-     * Set name
-     *
-     * @param string $name name
-     *
-     * @return Requirement
+     * @{inheritdocs}
      */
     public function setName($name)
     {
@@ -72,14 +90,7 @@ class Requirement
     }
 
     /**
-     * @ORM\Column(type="text")
-     */
-    protected $description;
-
-    /**
-     * Get description
-     *
-     * @return string
+     * @{inheritdocs}
      */
     public function getDescription()
     {
@@ -87,11 +98,7 @@ class Requirement
     }
 
     /**
-     * Set description
-     *
-     * @param string $description string
-     *
-     * @return Requirement
+     * @{inheritdocs}
      */
     public function setDescription($description)
     {
@@ -101,15 +108,7 @@ class Requirement
     }
 
     /**
-     * @ORM\ManyToOne(targetEntity="Volleyball\Bundle\CourseBundle\Entity\Requirement", inversedBy="requirement")
-     * @ORM\JoinColumn(name="parent_id", referencedColumnName="id")
-     */
-    protected $parent = '';
-
-    /**
-     * Get parent
-     *
-     * @return Requirement
+     * @{inheritdocs}
      */
     public function getParent()
     {
@@ -117,13 +116,9 @@ class Requirement
     }
 
     /**
-     * Set requirement
-     *
-     * @param Requirement $parent parent
-     *
-     * @return Requirement
+     * @{inheritdocs}
      */
-    public function setParent(Requirement $parent)
+    public function setParent(\Volleyball\Bundle\CourseBundle\Entity\Requirement $parent)
     {
         $this->parent = $parent;
 
@@ -131,15 +126,7 @@ class Requirement
     }
 
     /**
-     * @ORM\ManyToOne(targetEntity="Volleyball\Bundle\CourseBundle\Entity\Course", inversedBy="requirement")
-     * @ORM\JoinColumn(name="course_id", referencedColumnName="id")
-     */
-    protected $course = '';
-
-    /**
-     * Get course
-     *
-     * @return Course
+     * @{inheritdocs}
      */
     public function getCourse()
     {
@@ -147,13 +134,9 @@ class Requirement
     }
 
     /**
-     * Set course
-     *
-     * @param Course $course course
-     *
-     * @return Requirement
+     * @{inheritdocs}
      */
-    public function setCourse(Course $course)
+    public function setCourse(\Volleyball\Bundle\CourseBundle\Entity\Course $course)
     {
         $this->course = $course;
 
@@ -161,17 +144,7 @@ class Requirement
     }
 
     /**
-     * Optional
-     *
-     * @param  boolean        $optional optional
-     * @return boolean|Course
-     */
-    protected $optional;
-
-    /**
-     * Is optional
-     * @param  boolean|null        $optional optional
-     * @return boolean|Requirement
+     * @{inheritdocs}
      */
     public function isOptional($optional = null)
     {

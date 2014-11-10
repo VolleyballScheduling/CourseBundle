@@ -14,7 +14,7 @@ use Vollyball\EnrollmentBundle\Entity\FacilityCourse;
  * @ORM\Entity(repositoryClass="Volleyball\Bundle\CourseBundle\Repository\VbClassRepository")
  * @ORM\Table(name="volleyball_class")
  */
-class VbClass
+class VbClass implements \Volleyball\Component\Course\Interfaces\VbClassInterface
 {
     use SluggableTrait;
     use TimestampableTrait;
@@ -26,6 +26,54 @@ class VbClass
      * @ORM\GeneratedValue(strategy="AUTO")
      */
     protected $id;
+    
+    /**
+     * @ORM\Column(type="string")
+     * @Assert\Length(
+     *      min = "1",
+     *      max = "250",
+     *      minMessage = "Name must be at least {{ limit }} characters length",
+     *      maxMessage = "Name cannot be longer than {{ limit }} characters length"
+     * )
+     */
+    protected $name;
+    
+    /**
+     * @ORM\ManyToOne(targetEntity="Volleyball\Bundle\EnrollmentBundle\Entity\FacilityCourse", inversedBy="classes")
+     * @ORM\JoinColumn(name="facility_course_id", referencedColumnName="id")
+     */
+    protected $facilityCourse;
+    
+    /**
+     * @ORM\ManyToOne(targetEntity="Volleyball\Bundle\FacilityBundle\Entity\Department", inversedBy="classes")
+     * @ORM\JoinColumn(name="department_id", referencedColumnName="id")
+     */
+    protected $department;
+    
+    /**
+     * @ORM\ManyToOne(targetEntity="Volleyball\Bundle\FacilityBundle\Entity\Faculty", inversedBy="classes")
+     * @ORM\JoinColumn(name="faculty_id", referencedColumnName="id")
+     */
+    protected $faculty;
+    
+    /**
+     * @ORM\ManyToOne(targetEntity="Volleyball\Bundle\CourseBundle\Entity\Course", inversedBy="classes")
+     * @ORM\JoinColumn(name="course_id", referencedColumnName="id")
+     */
+    protected $course;
+    
+    /**
+     * @ORM\Column(type="integer")
+     */
+    protected $capacity;
+    
+    /**
+     * Enabled
+     *
+     * @param  boolean        $enabled enabled
+     * @return boolean|Course
+     */
+    protected $enabled;
 
     /**
      * Get id
@@ -38,21 +86,7 @@ class VbClass
     }
 
     /**
-     * @ORM\Column(type="string")
-     * @Assert\Length(
-     *      min = "1",
-     *      max = "250",
-     *      minMessage = "Name must be at least {{ limit }} characters length",
-     *      maxMessage = "Name cannot be longer than {{ limit }} characters length"
-     * )
-     * @var string
-     */
-    protected $name;
-
-    /**
-     * Get name
-     *
-     * @return string
+     * @{inheritdocs}
      */
     public function getName()
     {
@@ -60,11 +94,7 @@ class VbClass
     }
 
     /**
-     * Set name
-     *
-     * @param string $name name
-     *
-     * @return Class
+     * @{inheritdocs}
      */
     public function setName($name)
     {
@@ -74,15 +104,7 @@ class VbClass
     }
 
     /**
-     * @ORM\ManyToOne(targetEntity="Volleyball\Bundle\EnrollmentBundle\Entity\FacilityCourse", inversedBy="class")
-     * @ORM\JoinColumn(name="facility_course_id", referencedColumnName="id")
-     */
-    protected $facilityCourse = '';
-
-    /**
-     * Get facility course
-     *
-     * @return FacilityCourse
+     * @{inheritdocs}
      */
     public function getFacilityCourse()
     {
@@ -90,38 +112,17 @@ class VbClass
     }
 
     /**
-     * Set facility course
-     *
-     * @param  FacilityCourse $facilityCourse faciltiy course
-     * @return FacilityCourse
+     * @{inheritdocs}
      */
-    public function setFacilityCourse(FacilityCourse $facilityCourse)
+    public function setFacilityCourse(\Volleyball\Bundle\EnrollmentBundle\Entity\FacilityCourse $facilityCourse)
     {
         $this->facilityCourse = $facilityCourse;
 
-        return $this->facilityCourse;
+        return $this;
     }
 
     /**
-     * Get course
-     *
-     * @return Course
-     */
-    public function getCourse()
-    {
-        return $this->facilityCourse->getCourse();
-    }
-
-    /**
-     * @ORM\ManyToOne(targetEntity="Volleyball\Bundle\FacilityBundle\Entity\Department", inversedBy="class")
-     * @ORM\JoinColumn(name="department_id", referencedColumnName="id")
-     */
-    protected $department = '';
-
-    /**
-     * Get department
-     *
-     * @return Department
+     * @{inheritdocs}
      */
     public function getDepartment()
     {
@@ -129,13 +130,9 @@ class VbClass
     }
 
     /**
-     * Set department
-     *
-     * @param Department $department department
-     *
-     * @return Class
+     * @{inheritdocs}
      */
-    public function setDepartment($department)
+    public function setDepartment(\Volleyball\Bundle\FacilityBundle\Entity\Department $department)
     {
         $this->department = $department;
 
@@ -143,15 +140,7 @@ class VbClass
     }
 
     /**
-     * @ORM\ManyToOne(targetEntity="Volleyball\Bundle\FacilityBundle\Entity\Faculty", inversedBy="class")
-     * @ORM\JoinColumn(name="faculty_id", referencedColumnName="id")
-     */
-    protected $faculty = '';
-
-    /**
-     * Get faculty
-     *
-     * @return Faculty
+     * @{inheritdocs}
      */
     public function getFaculty()
     {
@@ -159,13 +148,9 @@ class VbClass
     }
 
     /**
-     * Set faculty
-     *
-     * @param Faculty $faculty faculty
-     *
-     * @return Class
+     * @{inheritdocs}
      */
-    public function setFaculty($faculty)
+    public function setFaculty(\Volleyball\Bundle\FacilityBundle\Entity\Faculty $faculty)
     {
         $this->faculty = $faculty;
 
@@ -173,14 +158,25 @@ class VbClass
     }
 
     /**
-     * @ORM\Column(type="integer")
+     * @{inheritdocs}
      */
-    protected $capacity;
+    public function getCourse()
+    {
+        return $this->course;
+    }
+    
+    /**
+     * @{inheritdocs}
+     */
+    public function setCourse(\Volleyball\Bundle\CourseBundle\Entity\Course $course)
+    {
+        $this->course = $course;
+        
+        return $this;
+    }
 
     /**
-     * Get capacity
-     *
-     * @return integer
+     * @{inheritdocs}
      */
     public function getCapacity()
     {
@@ -188,10 +184,7 @@ class VbClass
     }
 
     /**
-     * Set capacity
-     *
-     * @param  integer $capacity capacity
-     * @return Course
+     * @{inheritdocs}
      */
     public function setCapacity($capacity)
     {
@@ -201,13 +194,10 @@ class VbClass
     }
 
     /**
-     * Enabled
-     *
-     * @param  boolean        $enabled enabled
-     * @return boolean|Course
+     * Is enabled
+     * @param boolean|null $enabled
+     * @return \Volleyball\Bundle\CourseBundle\Entity\VbClass
      */
-    protected $enabled;
-
     public function isEnabled($enabled = null)
     {
         if (null != $enabled && is_bool($enabled)) {

@@ -14,7 +14,7 @@ use Vollyball\EnrollmentBundle\Entity\FacilityCourse;
  * @ORM\Entity(repositoryClass="Volleyball\Bundle\CourseBundle\Repository\VbClassRepository")
  * @ORM\Table(name="volleyball_class")
  */
-class VbClass implements \Volleyball\Component\Course\Interfaces\VbClassInterface
+class VbClass
 {
     use SluggableTrait;
     use TimestampableTrait;

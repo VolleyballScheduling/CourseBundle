@@ -12,7 +12,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  * @ORM\Entity(repositoryClass="Volleyball\Bundle\CourseBundle\Repository\RequirementRepository")
  * @ORM\Table(name="requirement")
  */
-class Requirement implements \Volleyball\Component\Course\Interfaces\RequirementInterface
+class Requirement
 {
     use SluggableTrait;
     use TimestampableTrait;

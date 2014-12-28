@@ -13,7 +13,7 @@ use \Volleyball\Bundle\UtilityBundle\Traits\TimestampableTrait;
  * @ORM\Entity(repositoryClass="Volleyball\Bundle\CourseBundle\Repository\CourseRepository")
  * @ORM\Table(name="course")
  */
-class Course implements \Volleyball\Component\Course\Interfaces\CourseInterface
+class Course
 {
     use SluggableTrait;
     use TimestampableTrait;

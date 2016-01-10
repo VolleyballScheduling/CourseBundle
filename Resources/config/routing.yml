@@ -1,3 +1,28 @@
-Volleyball_course_homepage:
-    pattern:  /hello/{name}
-    defaults: { _controller: VolleyballCourseBundle:Default:index }
+# Course Bundle
+'Volleyball:Courses':
+    host: courses.{domain}
+    defaults:
+        _resources:
+            "courses": {service: "volleyball.repository.course", method: "findAll"}
+            "course": {service: "volleyball.repository.course", method: "find", arguments: [name: "id"]}
+            "session": {service: "service_container", method: "get", arguments: [value: "session"]}
+    requirements:
+        domain: %domain%
+'Volleyball:Requirements':
+    host: requirements.{domain}
+    defaults:
+        _resources:
+            "requirements": {service: "volleyball.repository.requirement", method: "findAll"}
+            "requirement": {service: "volleyball.repository.requirement", method: "find", arguments: [name: "id"]}
+            "session": {service: "service_container", method: "get", arguments: [value: "session"]}
+    requirements:
+        domain: %domain%
+'Volleyball:Seminars':
+    host: seminars.{domain}
+    defaults:
+        _resources:
+            "seminars": {service: "volleyball.repository.seminar", method: "findAll"}
+            "seminar": {service: "volleyball.repository.seminar", method: "find", arguments: [name: "id"]}
+            "session": {service: "service_container", method: "get", arguments: [value: "session"]}
+    requirements:
+        domain: %domain%

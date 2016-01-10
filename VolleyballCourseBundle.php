@@ -2,29 +2,23 @@
 namespace Volleyball\Bundle\CourseBundle;
 
 use \Symfony\Component\DependencyInjection\ContainerBuilder;
-use \Sylius\Bundle\ResourceBundle\AbstractResourceBundle;
-use \Sylius\Bundle\ResourceBundle\SyliusResourceBundle;
 
-class VolleyballCourseBundle extends AbstractResourceBundle
+class VolleyballCourseBundle extends \Knp\RadBundle\AppBundle\Bundle
 {
     /**
-     * {@inheritdoc}
+     * @{inheritdoc}
      */
-    public static function getSupportedDrivers()
+    public function buildConfiguration(NodeParentInterface $rootNode)
     {
-        return array(
-            SyliusResourceBundle::DRIVER_DOCTRINE_ORM
-        );
     }
-    
+
     /**
-     * {@inheritdoc}
+     * @{inheritdoc}
      */
-    public function build(ContainerBuilder $container)
+    public function buildContainer(array $config, ContainerBuilder $container)
     {
-        parent::build($container);
     }
-    
+
     /**
      * {@inheritdoc}
      */

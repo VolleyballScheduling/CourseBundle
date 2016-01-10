@@ -1,0 +1,51 @@
+Volleyball\Bundle\CourseBundle\Entity\Requirement:
+    type: Entity
+    table: requirement
+    id:
+        id:
+            type: integer
+            generator:
+                strategy: AUTO
+    fields:
+        name:
+            type: string
+        description:
+            type: string
+            nullable: true
+        text:
+            type: string
+        optional:
+            type: boolean
+        createdAt:
+            type: datetime
+            gedmo:
+                timestampable:
+                    on: create
+        updatedAt:
+            type: datetime
+            gedmo:
+                timestampable:
+                    on: update
+        slug:
+            type: string
+            gedmo:
+                slug:
+                    fields:
+                        - name
+    ManyToOne:
+        course:
+            targetEntity: Volleyball\Bundle\CourseBundle\Entity\Course
+            inversedBy: requirement
+            joinColumn:
+                name: course_id
+                referecedColumnName: id
+        parent:
+            targetEntity: Volleyball\Bundle\CourseBundle\Entity\Requirement
+            inversedBy: requirement
+            joinColumn:
+                name: parent_id
+                referecedColumnName: id
+    OneToMany:
+        children:
+            targetEntity: Volleyball\Bundle\OrganizationBundle\Entity\Requirement
+            mappedBy: requirement

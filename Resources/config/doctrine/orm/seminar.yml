@@ -1,0 +1,53 @@
+Volleyball\Bundle\CourseBundle\Entity\Seminar:
+    type: Entity
+    table: seminar
+    id:
+        id:
+            type: integer
+            generator:
+                strategy: AUTO
+    fields:
+        name:
+            type: string
+        description:
+            type: string
+            nullable: true
+        createdAt:
+            type: datetime
+            gedmo:
+                timestampable:
+                    on: create
+        updatedAt:
+            type: datetime
+            gedmo:
+                timestampable:
+                    on: update
+        slug:
+            type: string
+            gedmo:
+                slug:
+                    fields:
+                        - name
+    ManyToOne:
+        facilityCourseEnrollment:
+            targetEntity: Volleyball\Bundle\EnrollmentBundle\Entity\FacilityCourseEnrollment
+            inversedBy: seminar
+            joinColumn:
+                name: facility_course_enrollment_id
+                referecedColumnName: id
+        facility:
+            targetEntity: Volleyball\Bundle\FacilityBundle\Entity\Faility
+            inversedBy: seminar
+            joinColumn:
+                name: facility_id
+                referecedColumnName: id
+        department:
+            targetEntity: Volleyball\Bundle\FacilityBundle\Entity\Department
+            inversedBy: seminar
+            joinColumn:
+                name: department_id
+                referecedColumnName: id
+    ManyToMany:
+        faculty:
+            targetEntity: Volleyball\Bundle\FacilityBundle\Entity\Facility
+            mappedBy: seminar

@@ -1,0 +1,39 @@
+Volleyball\Bundle\CourseBundle\Entity\Course:
+    type: Entity
+    table: course
+    id:
+        id:
+            type: integer
+            generator:
+                strategy: AUTO
+    fields:
+        name:
+            type: string
+        description:
+            type: string
+            nullable: true
+        special:
+            type: boolean
+        createdAt:
+            type: datetime
+            gedmo:
+                timestampable:
+                    on: create
+        updatedAt:
+            type: datetime
+            gedmo:
+                timestampable:
+                    on: update
+        slug:
+            type: string
+            gedmo:
+                slug:
+                    fields:
+                        - name
+    OneToMany:
+        organizations:
+            targetEntity: Volleyball\Bundle\OrganizationBundle\Entity\Organization
+            mappedBy: course
+        requirements:
+            targetEntity: Volleyball\Bundle\CourseBundle\Entity\Requirement
+            mappedBy: course

@@ -1,94 +1,63 @@
 <?php
 namespace Volleyball\Bundle\CourseBundle\Controller;
 
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
-use Symfony\Component\HttpFoundation\Request;
-
-use Pagerfanta\Pagerfanta;
-use Pagerfanta\Adapter\DoctrineORMAdapter;
-
-use Volleyball\Bundle\CourseBundle\Entity\Course;
-use Volleyball\Bundle\CourseBundle\Form\Type\CourseType;
-use Volleyball\Bundle\UtilityBundle\Controller\UtilityController as Controller;
-
-class CourseController extends Controller
+class CourseController extends \Volleyball\Bundle\UtilityBundle\Controller\Controller
 {
     /**
-     * @Route("/", name="volleyball_course_index")
-     * @Template("VolleyballCourseBundle:Course:index.html.twig")
+     * Index action
+     * @inheritdoc
      */
-    public function indexAction(Request $request)
+    public function indexAction(array $courses)
     {
-        // get route name/params to decypher data to delimit by
-        $query = $this->get('doctrine')
-            ->getRepository('VolleyballCourseBundle:Course')
-            ->createQueryBuilder('l')
-            ->orderBy('l.updated, l.name', 'ASC');
-
-        $pager = new Pagerfanta(new DoctrineORMAdapter($query));
-        $pager->setMaxPerPage($this->getRequest()->get('pageMax', 5));
-        $pager->setCurrentPage($this->getRequest()->get('page', 1));
-
-        return array(
-          'courses' => $pager->getCurrentPageResults(),
-          'pager'  => $pager
-        );
+        return ['courses' => $this->getCourses()];
     }
 
     /**
-     * @Route("/{slug}", name="volleyball_course_show")
-     * @Template("VolleyballCourseBundle:Course:show.html.twig")
+     * New action
+     * @inheritdoc
      */
-    public function showAction(Request $request)
+    public function newAction()
     {
-        $slug = $request->getParameter('slug');
-        $course = $this->getDoctrine()
-            ->getRepository('VolleyballCourseBundle:Course')
-            ->findOneBySlug($slug);
+        $course = new \Volleyball\Bundle\CourseBundle\Entity\Course();
+        $form = $this->createBoundObjectForm($course, 'new');
 
-        if (!$course) {
-            $this->get('session')
-                ->getFlashBag()->add(
-                    'error',
-                    'no matching course found.'
-                );
-            $this->redirect($this->generateUrl('volleyball_course_index'));
+        if ($form->isBound() && $form->isValid()) {
+            $this->persist($course, true);
+            $this->addFlash('course created');
+
+            return $this->redirectToRoute('volleyball_courses_index');
         }
 
-        return array('course' => $course);
+        return ['form' => $form->createView()];
     }
-
+    
     /**
-     * @Route("/new", name="volleyball_course_new")
-     * @Template("VolleyballCourseBundle:Course:new.html.twig")
+     * Search action
+     * @inheritdoc
      */
-    public function newAction(Request $request)
+    public function searchAction(array $courses)
     {
-        $course = new Course();
-        $form = $this->createForm(new CourseType(), $course);
+        $course = new \Volleyball\Bundle\CourseBundle\Entity\Course();
+        $form = $this->createBoundObjectForm($course, 'search');
+        
+        if ($form->isBound() && $form->isValid()) {
+            /** @TODO finish course search, also restrict access */
+            $courses = array();
 
-        if ("POST" == $request->getMethod()) {
-            $form->handleRequest($this->getRequest());
-            if ($form->isValid()) {
-                $em = $this->getDoctrine()->getEntityManager();
-                $em->persist($course);
-                $em->flush();
-
-                $this->get('session')->getFlashBag()->add(
-                    'success',
-                    'course created.'
-                );
-
-                return $this->render(
-                    'VolleyballCourseBundle:Course:show.html.twig',
-                    array(
-                        'course' => $course
-                    )
-                );
-            }
+            return ['courses' => $courses];
         }
 
-        return array('form' => $form->createView());
+        return ['form' => $form->createView()];
     }
+    
+    /**
+     * Show action
+     * @inheritdoc
+     */
+    public function showAction(\Volleyball\Bundle\CourseBundle\Entity\Course $course)
+    {
+        return ['course' => $course];
+    }
+
+
 }
